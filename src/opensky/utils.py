@@ -2,11 +2,25 @@
 
 import csv
 import time
-import requests
-from pathlib import Path
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any, TypedDict
-from opensky.constants import EZE_LAT_MAX, EZE_LAT_MIN, EZE_LON_MAX, EZE_LON_MIN, TRIES, INITIAL_WAIT
+
+import requests
+
+from opensky.constants import (
+    EZE_LAT_MAX,
+    EZE_LAT_MIN,
+    EZE_LON_MAX,
+    EZE_LON_MIN,
+    INITIAL_WAIT,
+    TRIES,
+)
+
+
+class OpenSkyError(Exception):
+    """La API de OpenSky no respondió después de los reintentos."""
+
 
 class Avion(TypedDict):
     """Un avión cerca de Ezeiza, con nombres claros.
@@ -35,6 +49,7 @@ class Avion(TypedDict):
     altitud_m: float | None
     en_tierra: bool
 
+
 def get_api(url: str) -> dict[str, Any]:
     """Consulta el estado de los aviones en la zona de Ezeiza.
 
@@ -61,7 +76,7 @@ def get_api(url: str) -> dict[str, Any]:
             break  # salió bien: salimos del for
         except requests.RequestException as e:
             if intento == TRIES:
-                raise Exception(
+                raise OpenSkyError(
                     f"No se pudo consultar la API de OpenSky después de {TRIES} intentos: {e}"
                 ) from e
             espera = INITIAL_WAIT * 2 ** (intento - 1)
@@ -70,6 +85,7 @@ def get_api(url: str) -> dict[str, Any]:
 
     data: dict[str, Any] = r.json()
     return data
+
 
 def process_data(data: dict[str, Any]) -> list[Avion]:
     """Convierte la respuesta de la API en una lista de aviones con nombres claros.
@@ -94,6 +110,7 @@ def process_data(data: dict[str, Any]) -> list[Avion]:
             }
         )
     return aviones
+
 
 def save_csv(aviones: list[Avion], carpeta: str = "data") -> Path:
     """Guarda los aviones en un CSV nuevo, con la fecha y hora en el nombre.
