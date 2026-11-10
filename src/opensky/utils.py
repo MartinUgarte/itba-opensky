@@ -97,7 +97,9 @@ def process_data(data: dict[str, Any]) -> list[Avion]:
         Un diccionario por avión. Lista vacía si no hay aviones en la zona.
     """
     states = data["states"] or []  # la API devuelve null si no hay aviones
-    aviones = []
+
+    aviones: list[Avion] = []
+    
     for avion in states:
         aviones.append(
             {
