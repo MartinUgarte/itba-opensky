@@ -99,7 +99,7 @@ def process_data(data: dict[str, Any]) -> list[Avion]:
     states = data["states"] or []  # la API devuelve null si no hay aviones
 
     aviones: list[Avion] = []
-    
+
     for avion in states:
         aviones.append(
             {
