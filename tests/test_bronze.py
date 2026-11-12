@@ -4,7 +4,7 @@ import json
 from datetime import UTC, datetime
 from typing import Any
 
-from opensky.bronze import BRONZE_COLUMNS, build_bronze_df
+from opensky.bronze import BRONZE_DTYPES, build_bronze_df
 
 TS = datetime(2026, 11, 11, 12, 0, tzinfo=UTC)
 
@@ -55,7 +55,7 @@ DATA: dict[str, Any] = {
 
 def test_columnas_y_tipos_de_bronze() -> None:
     df = build_bronze_df(DATA, run_id="run-1", ingestion_ts=TS)
-    assert list(df.columns) == list(BRONZE_COLUMNS)
+    assert list(df.columns) == list(BRONZE_DTYPES)
     assert str(df["time_position"].dtype) == "Int64"
     assert str(df["on_ground"].dtype) == "boolean"
 
@@ -79,4 +79,4 @@ def test_sin_aviones_devuelve_df_vacio_con_schema() -> None:
         {"time": 1789000000, "states": None}, run_id="run-1", ingestion_ts=TS
     )
     assert df.empty
-    assert list(df.columns) == list(BRONZE_COLUMNS)
+    assert list(df.columns) == list(BRONZE_DTYPES)
