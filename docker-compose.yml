@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: opensky-postgres
+    environment:
+      POSTGRES_USER: opensky
+      POSTGRES_PASSWORD: opensky
+      POSTGRES_DB: datalake_prd
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
