@@ -27,12 +27,15 @@ def read_silver(engine: Engine) -> pd.DataFrame:
 
 
 def prepare(silver: pd.DataFrame) -> pd.DataFrame:
-    """Agrega las columnas derivadas que usan las tablas de gold."""
-    df = silver.copy()
-    df["velocity_kmh"] = df["velocity"] * MS_TO_KMH
+    """Agrega las columnas derivadas que usan las tablas de gold.
+
+    Modifica el DataFrame que recibe.
+    """
+    
+    silver["velocity_kmh"] = silver["velocity"] * MS_TO_KMH
     # Altitud solo de los aviones en vuelo: en tierra queda nula y no cuenta en el promedio.
-    df["airborne_altitude"] = df["baro_altitude"].where(~df["on_ground"])
-    return df
+    silver["airborne_altitude"] = silver["baro_altitude"].where(~silver["on_ground"])
+    return silver
 
 
 def traffic_by_snapshot(df: pd.DataFrame) -> pd.DataFrame:

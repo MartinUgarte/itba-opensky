@@ -60,7 +60,9 @@ def build_silver_df(bronze: pd.DataFrame, processed_ts: datetime) -> pd.DataFram
     Returns:
         Una fila por avión y snapshot, con las columnas y tipos de SILVER_DTYPES.
     """
-    df = bronze.copy()
+    
+    # Sin posición no sirve para analizar: se descarta.
+    df = bronze.dropna(subset=["latitude", "longitude"])
 
     # Textos: sacar espacios de relleno; callsign vacío pasa a nulo.
     df["icao24"] = df["icao24"].str.strip().str.lower()
@@ -74,9 +76,6 @@ def build_silver_df(bronze: pd.DataFrame, processed_ts: datetime) -> pd.DataFram
 
     # Código numérico a nombre legible (0 -> "ADS-B").
     df["position_source"] = df["position_source"].map(POSITION_SOURCES)
-
-    # Sin posición no sirve para analizar: se descarta.
-    df = df.dropna(subset=["latitude", "longitude"])
 
     # Si el mismo snapshot se cargó dos veces en bronze, nos quedamos con la última carga.
     df = df.sort_values("ingestion_ts")
